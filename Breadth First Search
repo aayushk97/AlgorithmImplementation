@@ -1,0 +1,124 @@
+#include<iostream>
+#include<cstdlib>
+#include<queue>
+
+using namespace std;
+
+struct node{
+	int data;
+	struct node* next;
+};
+
+struct vertexList{
+	struct node* vlistHead;
+};
+
+struct Graph{
+	int v;
+	struct vertexList* vl;
+};
+
+struct Graph* createGraph(int n){
+	struct Graph* vlist = (struct Graph*)malloc(sizeof(struct Graph));
+	vlist -> v = n;
+	
+	vlist -> vl = new vertexList[n];
+	
+	for(int i = 0; i < n; i++){
+		vlist -> vl[i].vlistHead = NULL;
+	}
+	
+	return vlist;
+}
+
+struct node* newNode(int value){
+	struct node* newNode = (struct node*)malloc(sizeof(struct node));
+	newNode -> data = value;
+	newNode -> next = NULL;
+	
+	return newNode;
+}
+
+void insertNode(Graph* G, int v1, int v2){
+	node* newNode1 = newNode(v1);
+	node* newNode2 = newNode(v2);
+
+	
+	if(G -> vl[v1].vlistHead ==NULL){
+		G -> vl[v1].vlistHead = newNode2;
+	}else{
+		newNode2 -> next = G -> vl[v1].vlistHead;
+		G -> vl[v1].vlistHead = newNode2;
+	}
+	
+	if(G -> vl[v2].vlistHead ==NULL){
+		G -> vl[v2].vlistHead = newNode1;
+	}else{
+		newNode1 -> next = G -> vl[v2].vlistHead;
+		G -> vl[v2].vlistHead = newNode1;
+	}
+}
+
+
+void BFS(Graph* G, int u, int visited[]){
+	//int v;
+	struct queue<int> Q;
+	
+	Q.push(u);
+	
+	while(!Q.empty()){
+		u = Q.front();
+		Q.pop();
+		
+		cout<<"next node: "<<u;
+		visited[u]= 1;
+		
+		node* temp = (node*)malloc(sizeof(node));
+		temp = G -> vl[u].vlistHead;
+		while(temp){
+				if(visited[temp -> data]== 0){
+					Q.push(temp -> data);
+					visited[temp -> data] = 1;
+				}
+			temp = temp -> next;
+		}
+		
+	}
+}
+
+
+
+int main(){
+	int v, e;
+	int vert1, vert2;
+	cout<<"Enter no of vertices: ";
+	cin>>v;
+	
+	cout<<"Enter number of edges: ";
+	cin>>e;
+	
+	struct Graph* G = createGraph(v);
+	
+	for(int i = 0 ; i < e; i++){
+		cout<<"Enter the vertices of edge: ";
+		cin>> vert1 >> vert2;
+		
+		insertNode(G,vert1, vert2);
+	}
+	
+	int u;
+	int visited[G->v];
+	
+	for(int i = 0; i< G -> v; i++){
+		visited[i] = 0;
+		cout<<visited[i];
+	}
+	cout<<"Enter a starting vertex";
+	cin>>u;
+	BFS(G, u, visited);
+	
+	
+}
+
+
+
