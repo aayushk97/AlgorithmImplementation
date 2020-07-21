@@ -1,0 +1,79 @@
+#include<iostream>
+#include<cstdlib>
+#include<queue>
+
+using namespace std;
+
+struct node{
+	int data;
+	struct node* next;
+};
+
+struct vertexList{
+	struct node* vlistHead;
+};
+
+struct Graph{
+	int v;
+	struct vertexList* vl;
+};
+
+struct Graph* createGraph(int n){
+	struct Graph* vlist = (struct Graph*)malloc(sizeof(struct Graph));
+	vlist -> v = n;
+	
+	vlist -> vl = new vertexList[n];
+	
+	for(int i = 0; i < n; i++){
+		vlist -> vl[i].vlistHead = NULL;
+	}
+	
+	return vlist;
+}
+
+struct node* newNode(int value){
+	struct node* newNode = (struct node*)malloc(sizeof(struct node));
+	newNode -> data = value;
+	newNode -> next = NULL;
+	
+	return newNode;
+}
+
+void insertNode(Graph* G, int v1, int v2){
+	node* newNode1 = newNode(v1);
+	node* newNode2 = newNode(v2);
+
+	
+	if(G -> vl[v1].vlistHead ==NULL){
+		G -> vl[v1].vlistHead = newNode2;
+	}else{
+		newNode2 -> next = G -> vl[v1].vlistHead;
+		G -> vl[v1].vlistHead = newNode2;
+	}
+	
+	if(G -> vl[v2].vlistHead ==NULL){
+		G -> vl[v2].vlistHead = newNode1;
+	}else{
+		newNode1 -> next = G -> vl[v2].vlistHead;
+		G -> vl[v2].vlistHead = newNode1;
+	}
+}
+
+int main(){
+	int v, e;
+	int vert1, vert2;
+	cout<<"Enter no of vertices: ";
+	cin>>v;
+	
+	cout<<"Enter number of edges: ";
+	cin>>e;
+	
+	struct Graph* G = createGraph(v);
+	
+	for(int i = 0 ; i < e; i++){
+		cout<<"Enter the vertices of edge: ";
+		cin>> vert1 >> vert2;
+		
+		insertNode(G,vert1, vert2);
+	}
+}
