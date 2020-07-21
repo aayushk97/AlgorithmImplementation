@@ -1,0 +1,131 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include <iostream>
+
+using namespace std;
+
+struct edge{
+	int src, dest, weight;
+};
+
+struct Graph{
+	int v,e;
+	struct edge* edge;
+};
+
+struct Graph* createGraph(int v, int e){
+	struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+	
+	graph -> v = v;
+	graph -> e = e;
+	graph -> edge = (struct edge*)malloc(e*sizeof(struct edge));
+	
+/*	for(int i = 0; i< e; i++){
+		graph -> edge[i].dest = 0;
+		graph -> edge[i].src = 0;
+		graph -> edge[i].weight = 0;
+	}
+*/	
+	return graph;
+}
+
+struct subset{
+	int parent;
+	int rank;
+};
+int find(subset subsets[], int i){
+	cout<<"before if in find"<<" subset of "<<i<<": "<<subsets[i].parent<<endl;
+	if(subsets[i].parent != i){
+		subsets[i].parent = find(subsets,subsets[i].parent);
+	}	
+	cout<<"after if in find:"<<endl ;
+	return subsets[i].parent;
+}
+
+void Union(subset subsets[], int x, int y){
+	int xroot = find(subsets, x);
+	int yroot = find(subsets, y);
+	
+	if(subsets[xroot].rank < subsets[yroot].rank){
+		subsets[xroot].parent = yroot;
+	}else if(subsets[xroot].rank > subsets[yroot].rank){
+		subsets[yroot].parent = xroot;
+	}else{
+		subsets[yroot].parent = xroot;
+		subsets[xroot].rank++;
+	}
+}
+
+int myComp(const void* a, const void* b){
+	edge* a1 = (edge*) a;
+	edge* b1 = (edge*) b;
+	
+	return a1 -> weight > b1 -> weight;
+}
+
+void printArr(edge result[], int v){
+	cout<<"weights are: "<<endl;
+	for(int i = 0; i<v -1 ; i++){
+		cout<<"->"<<result[i].weight;
+	}
+}
+
+void Krushkals(struct Graph* graph){
+	int v = graph -> v;
+	edge result[v];
+	int e = 0; 
+	int i = 0;
+	cout<<"aa";
+	qsort(graph -> edge, graph -> e, sizeof(graph->edge[0]),myComp);
+	cout<<"aaa";
+	struct subset* subsets = (struct subset*)malloc(v*sizeof(subset));
+	
+	for(int j = 0; j < v ; j++){
+		subsets[j].parent = j;
+		subsets[j].rank = 0;
+	}
+	cout<<subsets[4].parent<<endl;
+	while(e < (v-1) && i < graph -> e){
+		edge nextEdge = graph -> edge[i];
+		i++;
+		cout<<"Inside while i: "<<i<<endl;
+		int x = find(subsets, nextEdge.src);
+		cout<<"parent of x: "<<x<<endl;
+		int y = find(subsets,nextEdge.dest);
+		cout<<"Subsets: "<<x<<"_"<<y<<endl;
+		if(x != y){
+			
+			result[e] = nextEdge;
+			e++;
+			cout<<"Inside if e: "<<e<<"weight is: "<<nextEdge.weight<<endl;
+			Union(subsets,x,y);
+		}
+	}
+	
+	printArr(result,v);
+}
+
+int main(){
+	int v, e;
+	int src, dest, weight;
+	
+	cout<<"Enter no of vertices: ";
+	cin>>v;
+	cout<<"Enter no of edges: ";
+	cin>>e;
+	
+	struct Graph* g = createGraph(v,e);
+	
+	for(int i = 0; i < e; i++){
+		cout<<"Enter the edge and its weight: ";
+		cin>>src>>dest>>weight;
+		g -> edge[i].src = src;
+		g -> edge[i].dest = dest;
+		g -> edge[i].weight = weight;
+	}
+	
+	Krushkals(g);
+	return 0;
+}
+
+
